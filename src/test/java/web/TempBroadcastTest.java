@@ -27,7 +27,7 @@ class TempBroadcastTest {
 
     @Test
     public void onOpenBroadcastsTemperature() throws Exception {
-        List<SensorReportDTO> status = Arrays.asList(
+        var status = Arrays.asList(
                 new SensorReportDTO(),
                 new SensorReportDTO()
         );
@@ -37,7 +37,7 @@ class TempBroadcastTest {
 
         Mockito.when(facadeMock.getLatest()).thenReturn(status);
 
-        Session sessionMock = Mockito.mock(Session.class);
+        var sessionMock = Mockito.mock(Session.class);
 
         impl.onOpen(sessionMock);
 
@@ -53,7 +53,7 @@ class TempBroadcastTest {
 
         Mockito.when(facadeMock.getAllStatus()).thenReturn(Collections.emptyList());
 
-        Session sessionMock = Mockito.mock(Session.class);
+        var sessionMock = Mockito.mock(Session.class);
 
         impl.onOpen(sessionMock);
 
@@ -62,10 +62,10 @@ class TempBroadcastTest {
 
     @Test
     public void onCloseRemovesSession() {
-        Session sessionMock1 = Mockito.mock(Session.class);
+        var sessionMock1 = Mockito.mock(Session.class);
         impl.onOpen(sessionMock1);
 
-        Session sessionMock2 = Mockito.mock(Session.class);
+        var sessionMock2 = Mockito.mock(Session.class);
         impl.onOpen(sessionMock2);
 
         Mockito.reset(broadcast);
@@ -79,10 +79,10 @@ class TempBroadcastTest {
     @Test
     public void onErrorRemovesSession() {
 
-        Session sessionMock1 = Mockito.mock(Session.class);
+        var sessionMock1 = Mockito.mock(Session.class);
         impl.onOpen(sessionMock1);
 
-        Session sessionMock2 = Mockito.mock(Session.class);
+        var sessionMock2 = Mockito.mock(Session.class);
         impl.onOpen(sessionMock2);
 
         Mockito.reset(broadcast);
@@ -95,7 +95,7 @@ class TempBroadcastTest {
 
     @Test
     public void sendCallBroadcasts() throws Exception {
-        SensorReportDTO status = new SensorReportDTO();
+        var status = new SensorReportDTO();
         impl.send(status);
 
         Mockito.verify(broadcast).send(status);

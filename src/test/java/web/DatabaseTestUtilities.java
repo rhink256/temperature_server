@@ -14,9 +14,8 @@ import java.util.*;
 
 public class DatabaseTestUtilities {
 
-
     public static EntityManager init() {
-        Map<String, Object> config = new HashMap<>();
+        var config = new HashMap<String, Object>();
         config.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL10Dialect");
         config.put("hibernate.show_sql", "true");
         config.put("hibernate.hbm2ddl.auto", "update");
@@ -25,10 +24,10 @@ public class DatabaseTestUtilities {
         config.put("hibernate.connection.username", "sa");
         config.put("hibernate.connection.password", "sa");
 
-        EntityManagerFactory emf = new HibernatePersistenceProvider().createContainerEntityManagerFactory(
+        var emf = new HibernatePersistenceProvider().createContainerEntityManagerFactory(
                 new CustomPersistenceUnitInfo(), config);
 
-        EntityManager entityManager = emf.createEntityManager();
+        var entityManager = emf.createEntityManager();
         return entityManager;
     }
 

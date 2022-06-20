@@ -38,7 +38,7 @@ public class SensorFacade {
 	}
 
 	SensorReport dtoToReport(SensorReportDTO reportDto) {
-		SensorReport report = new SensorReport();
+		var report = new SensorReport();
 
 		report.setReportTime(reportDto.getReportTime());
 		report.setCelsius(reportDto.getCelsius());
@@ -51,9 +51,9 @@ public class SensorFacade {
 	}
 
 	SensorReportDTO reportToDto(SensorReport report, float offsetDegreesC) {
-		Sensor sensor = report.getSensor();
+		var sensor = report.getSensor();
 
-		SensorReportDTO dto = new SensorReportDTO();
+		var dto = new SensorReportDTO();
 
 		dto.setSensorId(sensor.getSensorId());
 		dto.setName(sensor.getName());
@@ -76,7 +76,7 @@ public class SensorFacade {
 		}
 
 		// persist
-		Optional<Sensor> sensorOptional = getSensorOptById(em, reportDto.getSensorId());
+		var sensorOptional = getSensorOptById(em, reportDto.getSensorId());
 
 		if (sensorOptional.isPresent()) {
 			updateSensor(sensorOptional.get(), reportDto);
@@ -89,7 +89,7 @@ public class SensorFacade {
 	}
 
 	void updateSensor(Sensor sensor, SensorReportDTO reportDto) {
-		SensorReport report = dtoToReport(reportDto);
+		var report = dtoToReport(reportDto);
 		sensor.getReports().add(report);
 
 		report.setSensor(sensor);
@@ -101,16 +101,16 @@ public class SensorFacade {
 	Sensor createSensor(EntityManager em, SensorReportDTO reportDto) {
 		LOG.info("Creating new sensor::" + reportDto.getSensorId());
 
-		SensorReport report = dtoToReport(reportDto);
+		var report = dtoToReport(reportDto);
 
-		Sensor sensor = new Sensor();
-		CalibrationData calibrationData = new CalibrationData();
+		var sensor = new Sensor();
+		var calibrationData = new CalibrationData();
 
 		sensor.setCalibrationData(calibrationData);
 		calibrationData.setSensor(sensor);
 		calibrationData.setOffset(reportDto.getOffset());
 
-		Status status = new Status();
+		var status = new Status();
 		sensor.setStatus(status);
 		status.setSensor(sensor);
 
@@ -126,10 +126,10 @@ public class SensorFacade {
 
 	@Transactional
 	public SensorReportDTO getLatestReportById(String id) {
-		SensorReport report = getLatestReport(id);
+		var report = getLatestReport(id);
 
 		float calibrationDegreesC;
-		CalibrationData calibrationData = report.getSensor().getCalibrationData();
+		var calibrationData = report.getSensor().getCalibrationData();
 		if (calibrationData == null) {
 			throw new IllegalStateException("Calibration Data is NULL for sensor with id::" + id);
 		} else {
@@ -139,25 +139,25 @@ public class SensorFacade {
 	}
 
 	public StatusDTO getStatus(String id) {
-		Sensor sensor = getSensorById(id);
+		var sensor = getSensorById(id);
 		return StatusDTO.fromEntity(sensor);
 	}
 
 	List<Sensor> getSensors(EntityManager em) {
-		TypedQuery<Sensor> sensorQuery = em.createQuery("SELECT s FROM Sensor s", Sensor.class);
+		var sensorQuery = em.createQuery("SELECT s FROM Sensor s", Sensor.class);
 		return sensorQuery.getResultList();
 	}
 
 	@Transactional
 	public List<SensorReportDTO> getLatest() {
-		List<Sensor> sensors = getSensors(em);
+		var sensors = getSensors(em);
 
 		// get latest report for each sensor
-		List<SensorReportDTO> result = new ArrayList<>();
-		for (Sensor s : sensors) {
+		var result = new ArrayList<SensorReportDTO>();
+		for (var s : sensors) {
 			SensorReport latest = getLatestReport(s);
 			float calibrationDegreesC = s.getCalibrationData().getOffset();
-			SensorReportDTO dto = reportToDto(latest, calibrationDegreesC);
+			var dto = reportToDto(latest, calibrationDegreesC);
 			result.add(dto);
 		}
 
@@ -170,22 +170,22 @@ public class SensorFacade {
 
 	@Transactional
 	public List<StatusDTO> getAllStatus() {
-		List<Sensor> sensors = getSensors(em);
+		var sensors = getSensors(em);
 		return sensors.stream().map(StatusDTO::fromEntity).collect(Collectors.toList());
 	}
 
 	@Transactional
 	public StatusDTO setStatus(StatusDTO statusDTO) {
-		Optional<Sensor> sensorOptional = getSensorOptById(em, statusDTO.id);
+		var sensorOptional = getSensorOptById(em, statusDTO.id);
 
 		if (!sensorOptional.isPresent()) {
 			LOG.warn("No Sensor for ID:" + statusDTO);
 			return null;
 		}
 
-		Sensor sensor = sensorOptional.get();
+		var sensor = sensorOptional.get();
 
-		Status status = sensor.getStatus();
+		var status = sensor.getStatus();
 
 		status.updateFromDto(statusDTO);
 
@@ -195,24 +195,24 @@ public class SensorFacade {
 	}
 
 	public void setName(String id, String name) {
-		Sensor sensor = getSensorById(id);
+		var sensor = getSensorById(id);
 		sensor.setName(name);
 	}
 
 	@Transactional
 	public void setCalibration(CalibrationData calibration) {
-		Sensor sensor = getSensorById(calibration.getSensorId());
+		var sensor = getSensorById(calibration.getSensorId());
 		sensor.getCalibrationData().setOffset(calibration.getOffset());
 	}
 
 	SensorReport getLatestReport(String id) {
-		Sensor sensor = getSensorById(id);
+		var sensor = getSensorById(id);
 		return getLatestReport(sensor);
 	}
 
 	@Transactional
 	Sensor getSensorById(String id) {
-		Optional<Sensor> sensorOptional = getSensorOptById(em, id);
+		var sensorOptional = getSensorOptById(em, id);
 		if (sensorOptional.isPresent()) {
 			return sensorOptional.get();
 		} else {
@@ -221,13 +221,13 @@ public class SensorFacade {
 	}
 
 	Optional<Sensor> getSensorOptById(EntityManager em, String id) {
-		TypedQuery<Sensor> query = em.createQuery(
+		var query = em.createQuery(
 				"SELECT s FROM Sensor s WHERE s.sensorId=:id",
 				Sensor.class);
 
 		query.setParameter("id", id);
 
-		List<Sensor> result = query.getResultList();
+		var result = query.getResultList();
 		if (result.size() == 0) {
 			return Optional.empty();
 		} else if(result.size() == 1) {
@@ -243,7 +243,7 @@ public class SensorFacade {
 	}
 
 	float getMinTemperatureQuery(EntityManager em, String sensorId, Date start, Date end) {
-		TypedQuery<Float> query = em.createQuery(
+		var query = em.createQuery(
 				"SELECT min(celsius) FROM SensorReport sr WHERE sr.sensor.sensorId=:id AND sr.reportTime BETWEEN :start AND :end",
 				Float.class);
 		query.setParameter("id", sensorId);
@@ -258,7 +258,7 @@ public class SensorFacade {
 	}
 
 	float getMaxTemperatureQuery(EntityManager em, String sensorId, Date start, Date end) {
-		TypedQuery<Float> query = em.createQuery(
+		var query = em.createQuery(
 				"SELECT max(celsius) FROM SensorReport sr WHERE sr.sensor.sensorId=:id AND sr.reportTime BETWEEN :start AND :end",
 				Float.class);
 		query.setParameter("id", sensorId);
@@ -270,7 +270,7 @@ public class SensorFacade {
 
 	@Transactional
 	public List<TemperatureDataDto> getTemperatureForRange(String sensorId, Date start, Date end, String intervalType) {
-		List<SensorReport> queryResult = temperatureRangeQuery(em, sensorId, start, end);
+		var queryResult = temperatureRangeQuery(em, sensorId, start, end);
 
 		if (queryResult.isEmpty()) {
 			return Collections.emptyList();
@@ -280,7 +280,7 @@ public class SensorFacade {
 		long intervalStart = computeIntervalStart(start, intervalType);
 		int numIntervals = computeIntervalCount(start, end, intervalMilliseconds);
 
-		List<TemperatureDataDto> result = rangeToIntervals(
+		var result = rangeToIntervals(
 				numIntervals, intervalStart, intervalMilliseconds, intervalType, queryResult);
 
 		return result;
@@ -304,7 +304,7 @@ public class SensorFacade {
 			String intervalType,
 			List<SensorReport> orderedReports) {
 
-		List<TemperatureDataDto> result = new ArrayList<>();
+		var result = new ArrayList<TemperatureDataDto>();
 
 		float accumulate = 0;
 		int numReportsInInterval = 0;
@@ -314,7 +314,7 @@ public class SensorFacade {
 
 			// average sensor report temperature data over the interval
 			for (int j = resultIndex; j < orderedReports.size(); j++) {
-				SensorReport report = orderedReports.get(j);
+				var report = orderedReports.get(j);
 				long currentTime = report.getReportTime().getTime();
 
 				if (currentTime - intervalStart > intervalMilliseconds) {
@@ -326,7 +326,7 @@ public class SensorFacade {
 				}
 			}
 
-			String label = generateLabel(intervalStart, intervalType);
+			var label = generateLabel(intervalStart, intervalType);
 
 			TemperatureDataDto dto;
 			if (numReportsInInterval == 0) {
@@ -349,7 +349,7 @@ public class SensorFacade {
 
 	String generateLabel(long intervalStart, String intervalType) {
 		String label = "";
-		Calendar calendar = Calendar.getInstance();
+		var calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(intervalStart);
 		LOG.info("calendar:" + calendar);
 		if (intervalType.equalsIgnoreCase("hour")) {
@@ -376,15 +376,14 @@ public class SensorFacade {
 	long computeIntervalStart(Date start, String intervalType) {
 		long intervalStart;
 		if (intervalType.equalsIgnoreCase("day")) {
-
-			Calendar calendar = Calendar.getInstance();
+			var calendar = Calendar.getInstance();
 			calendar.setTime(start);
 
 			calendar = roundToDay(calendar);
 
 			intervalStart = calendar.getTimeInMillis();
 		} else if (intervalType.equalsIgnoreCase("hour")) {
-			Calendar calendar = Calendar.getInstance();
+			var calendar = Calendar.getInstance();
 			calendar.setTime(start);
 			calendar = roundToHour(calendar);
 
@@ -425,7 +424,7 @@ public class SensorFacade {
 
 	List<SensorReport> temperatureRangeQuery(EntityManager em, String sensorId, Date start, Date end) {
 		// get all the data for the entire range. We'll average values over each interval and return that to the caller
-		TypedQuery<SensorReport> query = em.createQuery(
+		var query = em.createQuery(
 				"SELECT sr FROM SensorReport sr WHERE sr.sensor.sensorId=:id " +
 						"AND sr.reportTime BETWEEN :start and :end ORDER BY sr.reportTime ASC",
 				SensorReport.class);

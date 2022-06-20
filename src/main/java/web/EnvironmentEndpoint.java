@@ -51,7 +51,7 @@ public class EnvironmentEndpoint {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response putTemp(@Context HttpServletRequest request, SensorReportDTO env) throws JsonProcessingException {
-		String addr = request.getRemoteAddr();
+		var addr = request.getRemoteAddr();
 
 		env.setSensorId(addr);
 
@@ -69,7 +69,7 @@ public class EnvironmentEndpoint {
 	public Response setName(NameChange name) throws JsonProcessingException {
 		LOG.info("====>name change:" + name);
 		facade.setName(name.id, name.name);
-		SensorReportDTO report = facade.getLatestReportById(name.id);
+		var report = facade.getLatestReportById(name.id);
 
 		tempBroadcast.send(report);
 
@@ -84,7 +84,7 @@ public class EnvironmentEndpoint {
 	public Response putStatus(@Context HttpServletRequest request, StatusDTO status) throws JsonProcessingException {
 		status.id = request.getRemoteAddr();
 
-		StatusDTO out = facade.setStatus(status);
+		var out = facade.setStatus(status);
 		if (out != null) {
 			statusBroadcast.send(facade.setStatus(out));
 		}
@@ -101,7 +101,7 @@ public class EnvironmentEndpoint {
 		LOG.info("====>calibration update::" + calibration);
 		facade.setCalibration(calibration);
 
-		SensorReportDTO report = facade.getLatestReportById(calibration.getSensorId());
+		var report = facade.getLatestReportById(calibration.getSensorId());
 
 		tempBroadcast.send(report);
 
@@ -121,12 +121,12 @@ public class EnvironmentEndpoint {
 				+ " from: \'" + startDate + "\' to: \'" + endDate
 				+ "\' with interval of: " + intervalType);
 
-		SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+		var formatter = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
 
-		Date start = formatter.parse(startDate);
-		Date end = formatter.parse(endDate);
+		var start = formatter.parse(startDate);
+		var end = formatter.parse(endDate);
 
-		List<TemperatureDataDto> result =
+		var result =
 				facade.getTemperatureForRange(sensorId, start, end, intervalType);
 
 		return Response.status(200).entity(result).build();

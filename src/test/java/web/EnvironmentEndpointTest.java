@@ -34,13 +34,13 @@ class EnvironmentEndpointTest {
 
     @Test
     public void putTempBroadcastsAndReturnsOK() throws Exception {
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        var request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRemoteAddr()).thenReturn("address");
 
-        SensorReportDTO report = new SensorReportDTO();
+        var report = new SensorReportDTO();
         Mockito.when(facadeMock.report(report)).thenReturn(report);
 
-        Response response = endpoint.putTemp(request, report);
+        var response = endpoint.putTemp(request, report);
 
         assertEquals(response.getStatusInfo().getStatusCode(), 200);
         Mockito.verify(tempBroadcastMock).send(report);
@@ -48,14 +48,14 @@ class EnvironmentEndpointTest {
 
     @Test
     public void setNameBroadcastsAndReturnsOK() throws Exception {
-        NameChange name = new NameChange();
+        var name = new NameChange();
         name.id = "ID";
         name.name = "NAME";
 
         Mockito.when(facadeMock.getLatestReportById("ID")).thenReturn(new SensorReportDTO());
         Mockito.when(facadeMock.getStatus("ID")).thenReturn(new StatusDTO());
 
-        Response response = endpoint.setName(name);
+        var response = endpoint.setName(name);
 
         assertEquals(response.getStatusInfo().getStatusCode(), 200);
         Mockito.verify(tempBroadcastMock).send(Mockito.any(SensorReportDTO.class));
@@ -65,13 +65,13 @@ class EnvironmentEndpointTest {
 
     @Test
     public void putStatusBroadcastsAndReturnsOK() throws Exception {
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        var request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRemoteAddr()).thenReturn("address");
 
-        StatusDTO status = new StatusDTO();
+        var status = new StatusDTO();
         Mockito.when(facadeMock.setStatus(status)).thenReturn(status);
 
-        Response response = endpoint.putStatus(request, status);
+        var response = endpoint.putStatus(request, status);
 
         assertEquals(response.getStatusInfo().getStatusCode(), 200);
         Mockito.verify(statusBroadcastMock).send(status);
@@ -79,14 +79,14 @@ class EnvironmentEndpointTest {
 
     @Test
     public void setCalbrationBroadcastsAndReturnsOK() throws Exception {
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        var request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRemoteAddr()).thenReturn("address");
 
-        CalibrationData calibration = new CalibrationData();
+        var calibration = new CalibrationData();
         calibration.setSensorId("ID");
         calibration.setOffset(12.3f);
 
-        Response response = endpoint.setCalibration(calibration);
+        var response = endpoint.setCalibration(calibration);
 
         assertEquals(response.getStatusInfo().getStatusCode(), 200);
         Mockito.verify(facadeMock).setCalibration(Mockito.eq(calibration));
@@ -94,22 +94,22 @@ class EnvironmentEndpointTest {
 
     @Test
     public void getTemperatureOverInterval() throws Exception {
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        var request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRemoteAddr()).thenReturn("address");
 
-        String startDate = "01-01-0001";
-        String endDate = "12-12-2012";
+        var startDate = "01-01-0001";
+        var endDate = "12-12-2012";
 
-        SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+        var formatter = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
 
-        Date start = formatter.parse(startDate);
-        Date end = formatter.parse(endDate);
+        var start = formatter.parse(startDate);
+        var end = formatter.parse(endDate);
 
         Mockito.when(
                 facadeMock.getTemperatureForRange(Mockito.eq("4321"), Mockito.eq(start), Mockito.eq(end), Mockito.eq("qwerty")))
                 .thenReturn(Arrays.asList(new TemperatureDataDto("qwerty", -40)));
 
-        Response response = endpoint.getTemperatureOverInterval("4321", startDate, endDate, "qwerty");
+        var response = endpoint.getTemperatureOverInterval("4321", startDate, endDate, "qwerty");
 
         assertEquals(response.getStatusInfo().getStatusCode(), 200);
     }

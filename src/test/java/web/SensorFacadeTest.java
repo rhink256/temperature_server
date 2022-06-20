@@ -12,38 +12,36 @@ import web.entities.SensorReport;
 import web.entities.Status;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.TypedQuery;
 import java.util.*;
 
 public class SensorFacadeTest {
 
 	@Test
 	public void reportIfSensorExists() {
-		String reportId = "0.0.0.0.0";
-		EntityManager entityManagerMock = Mockito.mock(EntityManager.class);
+		var reportId = "0.0.0.0.0";
+		var entityManagerMock = Mockito.mock(EntityManager.class);
 
-		SensorFacade facade = new SensorFacade(() -> new Date(1234L), entityManagerMock);
+		var facade = new SensorFacade(() -> new Date(1234L), entityManagerMock);
 
-		SensorFacade spy = Mockito.spy(facade);
+		var spy = Mockito.spy(facade);
 
-		CalibrationData calibrationData = new CalibrationData();
+		var calibrationData = new CalibrationData();
 		calibrationData.setOffset(-999f);
 
-		Sensor sensor = new Sensor();
+		var sensor = new Sensor();
 		sensor.setSensorId(reportId);
 		sensor.setName("a_sensor");
 		sensor.setCalibrationData(calibrationData);
 
 		Mockito.doReturn(Optional.of(sensor)).when(spy).getSensorOptById(entityManagerMock, reportId);
 
-		SensorReportDTO report = new SensorReportDTO();
+		var report = new SensorReportDTO();
 		report.setSensorId(reportId);
 		report.setCelsius(42.3f);
 		report.setHumidity(12.3f);
 
-		SensorReportDTO result = spy.report(report);
+		var result = spy.report(report);
 
 		Assertions.assertNotNull(result);
 		Assertions.assertEquals(reportId, result.getSensorId());
@@ -57,22 +55,22 @@ public class SensorFacadeTest {
 
 	@Test
 	public void reportForNewSensor() {
-		String reportId = "0.0.0.0.0";
-		EntityManager entityManagerMock = Mockito.mock(EntityManager.class);
+		var reportId = "0.0.0.0.0";
+		var entityManagerMock = Mockito.mock(EntityManager.class);
 
-		SensorFacade facade = new SensorFacade(() -> new Date(1234L), entityManagerMock);
+		var facade = new SensorFacade(() -> new Date(1234L), entityManagerMock);
 
-		SensorFacade spy = Mockito.spy(facade);
+		var spy = Mockito.spy(facade);
 		Mockito.doReturn(Optional.empty()).when(spy).getSensorOptById(entityManagerMock, reportId);
 
-		SensorReportDTO report = new SensorReportDTO();
+		var report = new SensorReportDTO();
 		report.setSensorId(reportId);
 		report.setName("This is a test");
 		report.setCelsius(42.3f);
 		report.setHumidity(12.3f);
 		report.setReportTime(new Date(4321L));
 
-		SensorReportDTO result = spy.report(report);
+		var result = spy.report(report);
 
 		Assertions.assertNotNull(result);
 		Assertions.assertEquals("This is a test", result.getName(), "Name shouldn't be changed from report");
@@ -85,27 +83,27 @@ public class SensorFacadeTest {
 	
 	@Test
 	public void getMostRecentSensorReport() {
-		String reportId = "0.0.0.0.0";
+		var reportId = "0.0.0.0.0";
 
-		SensorFacade facade = new SensorFacade(() -> new Date(1234L), null);
+		var facade = new SensorFacade(() -> new Date(1234L), null);
 
-		Sensor sensor = new Sensor();
+		var sensor = new Sensor();
 		sensor.setSensorId(reportId);
 
-		CalibrationData calibrationData = new CalibrationData();
+		var calibrationData = new CalibrationData();
 		calibrationData.setOffset(234f);
 
 		sensor.setCalibrationData(calibrationData);
 
-		SensorFacade spy = Mockito.spy(facade);
+		var spy = Mockito.spy(facade);
 
-		SensorReport report = new SensorReport();
+		var report = new SensorReport();
 		report.setCelsius(123f);
 		report.setSensor(sensor);
 
 		Mockito.doReturn(report).when(spy).getLatestReport(reportId);
 
-		SensorReportDTO result = spy.getLatestReportById(reportId);
+		var result = spy.getLatestReportById(reportId);
 
 		Assertions.assertEquals(sensor.getSensorId(), result.getSensorId());
 		Assertions.assertEquals(sensor.getCalibrationData().getOffset(), result.getOffset());
@@ -114,20 +112,20 @@ public class SensorFacadeTest {
 
 	@Test
 	public void testUpdateCalibration() {
-		String reportId = "0.0.0.0.0";
+		var reportId = "0.0.0.0.0";
 
-		SensorFacade facade = new SensorFacade(() -> new Date(1234L), null);
+		var facade = new SensorFacade(() -> new Date(1234L), null);
 
-		CalibrationData calibrationData = new CalibrationData();
+		var calibrationData = new CalibrationData();
 		calibrationData.setOffset(-999f);
 
-		Sensor sensor = new Sensor();
+		var sensor = new Sensor();
 		sensor.setCalibrationData(calibrationData);
 
-		SensorFacade spy = Mockito.spy(facade);
+		var spy = Mockito.spy(facade);
 		Mockito.doReturn(sensor).when(spy).getSensorById(reportId);
 
-		CalibrationData data = new CalibrationData();
+		var data = new CalibrationData();
 		data.setOffset(12);
 		data.setSensorId(reportId);
 
@@ -141,26 +139,26 @@ public class SensorFacadeTest {
 	public void testGetLatest()  {
 
 		// configure sensors
-		Sensor sensor1 = new Sensor();
+		var sensor1 = new Sensor();
 		sensor1.setSensorId("0");
-		Sensor sensor2 = new Sensor();
+		var sensor2 = new Sensor();
 		sensor2.setSensorId("1");
-		List<Sensor> sensors = Arrays.asList(sensor1, sensor2);
+		var sensors = Arrays.asList(sensor1, sensor2);
 
-		EntityManager entityManagerMock = Mockito.mock(EntityManager.class);
+		var entityManagerMock = Mockito.mock(EntityManager.class);
 
-		SensorFacade facade = new SensorFacade(() -> new Date(1234L), entityManagerMock);
+		var facade = new SensorFacade(() -> new Date(1234L), entityManagerMock);
 
-		SensorFacade spy = Mockito.spy(facade);
+		var spy = Mockito.spy(facade);
 		Mockito.doReturn(sensors).when(spy).getSensors(entityManagerMock);
 
 		// create sensor reports
-		SensorReport report1 = new SensorReport();
+		var report1 = new SensorReport();
 		report1.setSensor(sensor1);
 		sensor1.getReports().add(report1);
 		sensor1.setCalibrationData(new CalibrationData());
 
-		SensorReport report2 = new SensorReport();
+		var report2 = new SensorReport();
 		report2.setSensor(sensor2);
 		sensor2.getReports().add(report2);
 		sensor2.setCalibrationData(new CalibrationData());
@@ -169,7 +167,7 @@ public class SensorFacadeTest {
 		Mockito.doReturn(report1).when(spy).getLatestReport("0");
 		Mockito.doReturn(report2).when(spy).getLatestReport("1");
 
-		List<SensorReportDTO> result = spy.getLatest();
+		var result = spy.getLatest();
 
 		// verify the reports are returned
 		Assertions.assertTrue(result.stream().map(SensorReportDTO::getSensorId).anyMatch(s -> s.equals("0")));

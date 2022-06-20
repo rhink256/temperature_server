@@ -27,14 +27,14 @@ class StatusBroadcastTest {
 
     @Test
     public void onOpenBroadcastsAllStatus() throws Exception {
-        List<StatusDTO> status = Arrays.asList(
+        var status = Arrays.asList(
                 new StatusDTO("ssid", "address", "state", 42, "id1", "name1"),
                 new StatusDTO("ssid", "address", "state", 42, "id2", "name2")
         );
 
         Mockito.when(facadeMock.getAllStatus()).thenReturn(status);
 
-        Session sessionMock = Mockito.mock(Session.class);
+        var sessionMock = Mockito.mock(Session.class);
 
         impl.onOpen(sessionMock);
 
@@ -50,7 +50,7 @@ class StatusBroadcastTest {
 
         Mockito.when(facadeMock.getAllStatus()).thenReturn(Collections.emptyList());
 
-        Session sessionMock = Mockito.mock(Session.class);
+        var sessionMock = Mockito.mock(Session.class);
 
         impl.onOpen(sessionMock);
 
@@ -59,10 +59,10 @@ class StatusBroadcastTest {
 
     @Test
     public void onCloseRemovesSession() {
-        Session sessionMock1 = Mockito.mock(Session.class);
+        var sessionMock1 = Mockito.mock(Session.class);
         impl.onOpen(sessionMock1);
 
-        Session sessionMock2 = Mockito.mock(Session.class);
+        var sessionMock2 = Mockito.mock(Session.class);
         impl.onOpen(sessionMock2);
 
         Mockito.reset(broadcast);
@@ -75,11 +75,10 @@ class StatusBroadcastTest {
 
     @Test
     public void onErrorRemovesSession() {
-
-        Session sessionMock1 = Mockito.mock(Session.class);
+        var sessionMock1 = Mockito.mock(Session.class);
         impl.onOpen(sessionMock1);
 
-        Session sessionMock2 = Mockito.mock(Session.class);
+        var sessionMock2 = Mockito.mock(Session.class);
         impl.onOpen(sessionMock2);
 
         Mockito.reset(broadcast);
@@ -92,7 +91,7 @@ class StatusBroadcastTest {
 
     @Test
     public void sendCallBroadcasts() throws Exception {
-        StatusDTO status = new StatusDTO();
+        var status = new StatusDTO();
         impl.send(status);
 
         Mockito.verify(broadcast).send(status);

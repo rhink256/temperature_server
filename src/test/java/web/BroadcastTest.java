@@ -24,10 +24,10 @@ class BroadcastTest {
 
     @Test
     public void sendBroadcastsToAllSessions() throws Exception {
-        StatusDTO status = new StatusDTO("ssid", "address", "state", 42, "id1", "name1");
+        var status = new StatusDTO("ssid", "address", "state", 42, "id1", "name1");
 
-        Pair<Session, RemoteEndpoint.Basic> sessionMock1 = mockSession();
-        Pair<Session, RemoteEndpoint.Basic> sessionMock2 = mockSession();
+        var sessionMock1 = mockSession();
+        var sessionMock2 = mockSession();
 
         Mockito.when(mapperMock.writeValueAsString(Mockito.same(status)))
                 .thenReturn("status json");
@@ -48,10 +48,10 @@ class BroadcastTest {
 
     @Test
     public void removeSessionWorks() throws Exception {
-        StatusDTO status = new StatusDTO("ssid", "address", "state", 42, "id1", "name1");
+        var status = new StatusDTO("ssid", "address", "state", 42, "id1", "name1");
 
-        Pair<Session, RemoteEndpoint.Basic> sessionMock1 = mockSession();
-        Pair<Session, RemoteEndpoint.Basic> sessionMock2 = mockSession();
+        var sessionMock1 = mockSession();
+        var sessionMock2 = mockSession();
 
         Mockito.when(mapperMock.writeValueAsString(Mockito.same(status)))
                 .thenReturn("status json");
@@ -72,13 +72,12 @@ class BroadcastTest {
     }
 
     private Pair<Session, RemoteEndpoint.Basic> mockSession() {
-        RemoteEndpoint.Basic remoteMock = Mockito.mock(RemoteEndpoint.Basic.class);
+        var remoteMock = Mockito.mock(RemoteEndpoint.Basic.class);
 
-        Session sessionMock = Mockito.mock(Session.class);
+        var sessionMock = Mockito.mock(Session.class);
         Mockito.when(sessionMock.getBasicRemote())
                 .thenReturn(remoteMock);
 
         return Pair.of(sessionMock, remoteMock);
     }
-
 }

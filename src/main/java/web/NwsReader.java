@@ -46,28 +46,28 @@ public class NwsReader {
 	
 	private void processNwsData() throws IOException {
 		LOG.info("getting NWS data");
-		URL url = new URL("https://api.weather.gov/stations/KEZF/observations/latest");
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		var url = new URL("https://api.weather.gov/stations/KEZF/observations/latest");
+		var conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
 		if (conn.getResponseCode() != 200) {
 			LOG.info("Response::" + conn.getResponseCode());
 			LOG.info(conn.getResponseMessage());
 		}
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		var br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		String output;
 		while ((output = br.readLine()) != null) {
 			builder.append(output).append('\n');
 		}
 
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode root = mapper.readTree(builder.toString());
-		JsonNode props = root.path("properties");
+		var mapper = new ObjectMapper();
+		var root = mapper.readTree(builder.toString());
+		var props = root.path("properties");
 		
 		if(!props.path("temperature").path("value").isNull()) {
-			SensorReportDTO reportDto = new SensorReportDTO();
+			var reportDto = new SensorReportDTO();
 			reportDto.setCelsius((float) props.path("temperature").path("value").asDouble());
 			reportDto.setHumidity((float)props.path("relativeHumidity").path("value").asDouble());
 			reportDto.setPressure((float)props.path("barometricPressure").path("value").asDouble() / 1000f);
