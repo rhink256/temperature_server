@@ -1,0 +1,88 @@
+plugins {
+    id 'java'
+    id 'war'
+    id 'jacoco'
+	id 'maven-publish'
+}
+
+compileJava {
+	sourceCompatibility = '1.8'
+	targetCompatibility = '1.8'
+}
+
+test {
+    finalizedBy jacocoTestReport
+}
+
+jacoco {
+	toolVersion = "0.8.6"
+}
+
+jacocoTestReport {
+    dependsOn test
+	reports {
+		xml.enabled true
+	}
+}
+
+repositories{
+	maven {
+		url "http://nexus.local/repository/maven-central/"
+		allowInsecureProtocol = true
+	}
+}
+
+dependencies {
+	implementation 'javax:javaee-api:8.0.1'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.2'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.13.2'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2'
+	implementation 'com.google.guava:guava:29.0-jre'
+	implementation 'org.hibernate:hibernate-core:5.4.27.Final'
+	implementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+	implementation 'org.apache.logging.log4j:log4j-api:2.14.1'
+	implementation 'org.apache.logging.log4j:log4j-web:2.14.1'
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+	implementation 'javax.persistence:javax.persistence-api:2.2'
+	implementation 'org.glassfish.jersey.core:jersey-common:2.35'
+
+	testImplementation 'org.mockito:mockito-core:4.2.0'
+	testImplementation 'nl.jqno.equalsverifier:equalsverifier:3.8.2'
+	testImplementation 'com.h2database:h2:2.1.210'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+war {
+	from 'src/main/java'
+}
+
+// uncomment to print test logs to standard out; gradle suppresses these by default
+//test {
+//	dependsOn cleanTest
+//	testLogging.showStandardStreams = true
+//}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			groupId = "local.temperature"
+			artifactId = "server"
+			version = "0.0.1"
+
+			artifact source: war, extension: 'war'
+		}
+	}
+	repositories {
+		maven {
+			url = "http://nexus.local/repository/temperature/"
+			allowInsecureProtocol = true
+			credentials {
+				username = project.getProperties().get("nexusUser")
+				password = project.getProperties().get("nexusPass")
+			}
+		}
+	}
+}
